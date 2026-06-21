@@ -20,5 +20,8 @@ namespace online_booking_and_reservation.Models
         public int Capacity { get; set; } = 1;
 
         public Guid? PolicyId { get; set; }
+
+        [StringLength(30)]
+        public string Status { get; set; } = "Available";
     }
 } 

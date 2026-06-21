@@ -7,14 +7,14 @@ builder.Services.AddControllersWithViews();
 
 // Add DbContext
 builder.Services.AddDbContext<online_booking_and_reservation.Data.ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add CORS for frontend
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
+        policy.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:5173", "http://localhost:5174")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -54,5 +54,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Seed the default admin account
+await online_booking_and_reservation.Data.DbSeeder.SeedAdminAsync(app.Services);
 
 app.Run();

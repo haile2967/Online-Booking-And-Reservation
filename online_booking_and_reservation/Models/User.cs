@@ -7,10 +7,12 @@ namespace online_booking_and_reservation.Models
     public class User
     {
         [Key]
+        [Column("user_id")]
         [StringLength(50)]
         public string UserId { get; set; } = Guid.NewGuid().ToString();
 
         [Required]
+        [Column("full_name")]
         [StringLength(100)]
         public string FullName { get; set; } = string.Empty;
 
@@ -20,10 +22,11 @@ namespace online_booking_and_reservation.Models
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(12)]
+        [StringLength(15)]
         public string Phone { get; set; } = string.Empty;
 
         [Required]
+        [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 } 

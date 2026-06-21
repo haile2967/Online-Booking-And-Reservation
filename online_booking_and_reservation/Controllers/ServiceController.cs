@@ -66,6 +66,14 @@ namespace online_booking_and_reservation.Controllers
                     }
                 }
 
+                // Validate status
+                if (!string.IsNullOrEmpty(request.Status) && 
+                    request.Status != "Available" && 
+                    request.Status != "Under Maintenance")
+                {
+                    return BadRequest("Status must be 'Available' or 'Under Maintenance'");
+                }
+
                 // Create new service from request
                 var service = new Service
                 {
@@ -75,7 +83,7 @@ namespace online_booking_and_reservation.Controllers
                     BasePrice = request.BasePrice,
                     Capacity = request.Capacity,
                     PolicyId = request.PolicyId,
-                    Status = "Available"
+                    Status = request.Status ?? "Available"
                 };
 
                 _context.Services.Add(service);
@@ -142,12 +150,20 @@ namespace online_booking_and_reservation.Controllers
                 return BadRequest("Capacity must be at least 1");
             }
 
+            // Validate status
+            if (!string.IsNullOrEmpty(service.Status) && 
+                service.Status != "Available" && 
+                service.Status != "Under Maintenance")
+            {
+                return BadRequest("Status must be 'Available' or 'Under Maintenance'");
+            }
+
             existingService.Name = service.Name;
             existingService.CategoryId = service.CategoryId;
             existingService.BasePrice = service.BasePrice;
             existingService.Capacity = service.Capacity;
             existingService.PolicyId = service.PolicyId;
-            existingService.Status = service.Status;
+            existingService.Status = service.Status ?? "Available";
 
             try
             {
@@ -228,36 +244,9 @@ namespace online_booking_and_reservation.Controllers
             return services;
         }
 
-        // PUT: api/Service/{id}/status
-        [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdateServiceStatus(Guid id, [FromBody] UpdateServiceStatusRequest request)
-        {
-            var service = await _context.Services.FindAsync(id);
-            if (service == null)
-            {
-                return NotFound();
-            }
-
-            if (request.Status != "Available" && request.Status != "Under Maintenance")
-            {
-                return BadRequest("Status must be 'Available' or 'Under Maintenance'");
-            }
-
-            service.Status = request.Status;
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
         private bool ServiceExists(Guid id)
         {
             return _context.Services.Any(e => e.ServiceId == id);
         }
-    }
-
-    // Request model for updating service status
-    public class UpdateServiceStatusRequest
-    {
-        public string Status { get; set; } = string.Empty;
     }
 } 

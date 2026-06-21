@@ -10,7 +10,7 @@ namespace online_booking_and_reservation.Models
         public Guid ScheduleId { get; set; } = Guid.NewGuid();
 
         [Required]
-        public Guid ResourceId { get; set; }
+        public Guid ServiceId { get; set; }
 
         [Required]
         [Column(TypeName = "date")]
@@ -29,7 +29,7 @@ namespace online_booking_and_reservation.Models
         public string Status { get; set; } = "Available";
 
         // Navigation property
-        [ForeignKey("ResourceId")]
-        public virtual Resource? Resource { get; set; }
+        [ForeignKey("ServiceId")]
+        public virtual Service? Service { get; set; }
     }
 } 

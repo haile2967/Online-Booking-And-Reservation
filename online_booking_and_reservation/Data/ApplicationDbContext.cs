@@ -28,21 +28,21 @@ namespace online_booking_and_reservation.Data
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).HasDefaultValueSql("NEWID()");
+                entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
                 entity.Property(e => e.FullName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.Role).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Password).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20).HasDefaultValue("Active");
-                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("NOW()");
             });
 
             // Configure Category entity
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.HasKey(e => e.CategoryId);
-                entity.Property(e => e.CategoryId).HasDefaultValueSql("NEWID()");
+                entity.Property(e => e.CategoryId).HasDefaultValueSql("gen_random_uuid()");
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Description).HasMaxLength(255);
             });
@@ -51,7 +51,7 @@ namespace online_booking_and_reservation.Data
             modelBuilder.Entity<CancellationPolicy>(entity =>
             {
                 entity.HasKey(e => e.PolicyId);
-                entity.Property(e => e.PolicyId).HasColumnName("policy_id").HasDefaultValueSql("NEWID()");
+                entity.Property(e => e.PolicyId).HasColumnName("policy_id").HasDefaultValueSql("gen_random_uuid()");
                 entity.Property(e => e.NoticeHours).HasColumnName("notice_hours").IsRequired();
                 entity.Property(e => e.RefundPercentage).HasColumnName("refund_percentage").IsRequired().HasDefaultValue(0);
             });
@@ -60,7 +60,7 @@ namespace online_booking_and_reservation.Data
             modelBuilder.Entity<Service>(entity =>
             {
                 entity.HasKey(e => e.ServiceId);
-                entity.Property(e => e.ServiceId).HasDefaultValueSql("NEWID()");
+                entity.Property(e => e.ServiceId).HasDefaultValueSql("gen_random_uuid()");
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.BasePrice).IsRequired().HasColumnType("decimal(10,2)");
                 entity.Property(e => e.Capacity).IsRequired().HasDefaultValue(1);
@@ -82,7 +82,7 @@ namespace online_booking_and_reservation.Data
             modelBuilder.Entity<Resource>(entity =>
             {
                 entity.HasKey(e => e.ResourceId);
-                entity.Property(e => e.ResourceId).HasDefaultValueSql("NEWID()");
+                entity.Property(e => e.ResourceId).HasDefaultValueSql("gen_random_uuid()");
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Type).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Quantity).IsRequired();
@@ -100,16 +100,17 @@ namespace online_booking_and_reservation.Data
             modelBuilder.Entity<Schedule>(entity =>
             {
                 entity.HasKey(e => e.ScheduleId);
-                entity.Property(e => e.ScheduleId).HasDefaultValueSql("NEWID()");
+                entity.Property(e => e.ScheduleId).HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.ServiceId).IsRequired();
                 entity.Property(e => e.StartDate).HasColumnType("date").IsRequired();
                 entity.Property(e => e.StartTime).HasColumnType("time").IsRequired();
                 entity.Property(e => e.EndTime).HasColumnType("time").IsRequired();
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20).HasDefaultValue("Available");
 
                 // Configure foreign key relationship
-                entity.HasOne(s => s.Resource)
+                entity.HasOne(s => s.Service)
                     .WithMany()
-                    .HasForeignKey(s => s.ResourceId)
+                    .HasForeignKey(s => s.ServiceId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -122,20 +123,20 @@ namespace online_booking_and_reservation.Data
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.Phone).IsRequired().HasMaxLength(12);
-                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("NOW()");
             });
 
             // Configure Booking entity
             modelBuilder.Entity<Booking>(entity =>
             {
                 entity.HasKey(e => e.BookingId);
-                entity.Property(e => e.BookingId).HasDefaultValueSql("NEWID()");
+                entity.Property(e => e.BookingId).HasDefaultValueSql("gen_random_uuid()");
                 entity.Property(e => e.UserId).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.ServiceId).IsRequired();
                 entity.Property(e => e.ScheduleId).IsRequired();
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20).HasDefaultValue("Pending");
                 entity.Property(e => e.TotalAmount).IsRequired().HasColumnType("decimal(10,2)");
-                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("NOW()");
 
                 // Configure foreign key relationships
                 entity.HasOne(b => b.User)
@@ -157,13 +158,14 @@ namespace online_booking_and_reservation.Data
             // Configure Payment entity
             modelBuilder.Entity<Payment>(entity =>
             {
+                entity.ToTable("Payments");
                 entity.HasKey(e => e.PaymentId);
-                entity.Property(e => e.PaymentId).HasDefaultValueSql("NEWID()");
+                entity.Property(e => e.PaymentId).HasDefaultValueSql("gen_random_uuid()");
                 entity.Property(e => e.BookingId).IsRequired();
                 entity.Property(e => e.PaymentMethod).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.AmountPaid).IsRequired().HasColumnType("decimal(10,2)");
                 entity.Property(e => e.PaymentType).IsRequired().HasMaxLength(20);
-                entity.Property(e => e.PaymentDate).IsRequired().HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.PaymentDate).IsRequired().HasDefaultValueSql("NOW()");
 
                 // Configure foreign key relationship
                 entity.HasOne(p => p.Booking)

@@ -95,11 +95,11 @@ namespace online_booking_and_reservation.Controllers
 
                     return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, new
                     {
-                        user_id = user.UserId,
-                        full_name = user.FullName,
+                        userId = user.UserId,
+                        fullName = user.FullName,
                         email = user.Email,
                         phone = user.Phone,
-                        created_at = user.CreatedAt
+                        createdAt = user.CreatedAt
                     });
                 }
             }
@@ -199,7 +199,8 @@ namespace online_booking_and_reservation.Controllers
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(12)]
+        [StringLength(15)]
+        [RegularExpression(@"^\+251\d{9}$", ErrorMessage = "Phone number must start with +251 followed by 9 digits")]
         public string Phone { get; set; } = string.Empty;
     }
 } 
