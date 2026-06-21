@@ -15,6 +15,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004", "http://localhost:5173", "http://localhost:5174")
+              .SetIsOriginAllowed(origin => true) // Allow production domains dynamically
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
