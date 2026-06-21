@@ -87,7 +87,7 @@ namespace online_booking_and_reservation.Controllers
                         FullName = request.FullName,
                         Email = request.Email,
                         Phone = request.Phone,
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.UtcNow
                     };
 
                     _context.Users.Add(user);

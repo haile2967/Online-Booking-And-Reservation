@@ -122,7 +122,7 @@ namespace online_booking_and_reservation.Data
                 entity.Property(e => e.FullName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
                 entity.HasIndex(e => e.Email).IsUnique();
-                entity.Property(e => e.Phone).IsRequired().HasMaxLength(12);
+                entity.Property(e => e.Phone).IsRequired().HasMaxLength(15);
                 entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("NOW()");
             });
 

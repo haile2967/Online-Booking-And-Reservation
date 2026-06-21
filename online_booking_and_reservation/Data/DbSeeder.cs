@@ -30,7 +30,7 @@ namespace online_booking_and_reservation.Data
                     FullName   = "System Admin",
                     Email      = adminEmail,
                     Role       = "Admin",
-                    Password   = "Admin@1234",   // Change this after first login
+                    Password   = "123456",   // Change this after first login
                     Status     = "Active",
                     CreatedAt  = DateTime.UtcNow
                 };
@@ -40,7 +40,7 @@ namespace online_booking_and_reservation.Data
 
                 Console.WriteLine("✅ Admin account seeded successfully.");
                 Console.WriteLine($"   Email   : {admin.Email}");
-                Console.WriteLine($"   Password: Admin@1234  (please change after first login)");
+                Console.WriteLine($"   Password: 123456  (please change after first login)");
             }
             else
             {

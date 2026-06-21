@@ -62,7 +62,7 @@ namespace online_booking_and_reservation.Controllers
                     PaymentMethod = request.PaymentMethod,
                     AmountPaid = request.AmountPaid,
                     PaymentType = request.PaymentType,
-                    PaymentDate = DateTime.Now
+                    PaymentDate = DateTime.UtcNow
                 };
 
                 _context.Payments.Add(payment);

@@ -30,7 +30,7 @@ namespace online_booking_and_reservation.Models
 
         [Required]
         [Column("payment_date")]
-        public DateTime PaymentDate { get; set; } = DateTime.Now;
+        public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
 
         // Navigation property
         [ForeignKey("BookingId")]

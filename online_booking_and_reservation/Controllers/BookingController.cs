@@ -176,7 +176,7 @@ namespace online_booking_and_reservation.Controllers
                     ScheduleId = request.ScheduleId,
                     Status = "Pending",
                     TotalAmount = service.BasePrice, // Automatically set to service base price
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 _context.Bookings.Add(booking);
