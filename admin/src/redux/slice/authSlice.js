@@ -21,6 +21,19 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const forgotPassword = createAsyncThunk(
+  'auth/forgotPassword',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`${API_BASE_URL}/forgot-password`, { email });
+      return response.data.message || 'If your email is registered, you will receive a new password shortly.';
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.response?.data || error.message || 'Failed to send password reset request';
+      return rejectWithValue(typeof errorMessage === 'string' ? errorMessage : 'Failed to send password reset request');
+    }
+  }
+);
+
 export const getAccounts = createAsyncThunk(
   'auth/getAccounts',
   async (_, { rejectWithValue }) => {
@@ -150,6 +163,22 @@ const authSlice = createSlice({
         state.success = 'Login successful';
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Forgot Password
+    builder
+      .addCase(forgotPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = action.payload;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

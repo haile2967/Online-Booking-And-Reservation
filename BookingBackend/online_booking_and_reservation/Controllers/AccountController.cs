@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using online_booking_and_reservation.Data;
 using online_booking_and_reservation.Models;
 
+using online_booking_and_reservation.Services;
+
 namespace online_booking_and_reservation.Controllers
 {
     [ApiController]
@@ -10,10 +12,12 @@ namespace online_booking_and_reservation.Controllers
     public class AccountController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public AccountController(ApplicationDbContext context)
+        public AccountController(ApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // GET: api/Account
@@ -195,6 +199,52 @@ namespace online_booking_and_reservation.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // POST: api/Account/forgot-password
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == request.Email);
+            if (account == null)
+            {
+                // To prevent email enumeration, return Ok even if not found
+                return Ok(new { message = "If your email is registered, you will receive a new password shortly." });
+            }
+
+            // Generate a random 8-character temporary password
+            var tempPassword = Guid.NewGuid().ToString().Substring(0, 8);
+            
+            // Update the password in DB
+            account.Password = tempPassword;
+            await _context.SaveChangesAsync();
+
+            // Send Email
+            var subject = "Your Password Has Been Reset - Admin Dashboard";
+            var body = $@"
+                <h2>Password Reset Request</h2>
+                <p>Hello {account.FullName},</p>
+                <p>Your password has been successfully reset. Your new temporary password is:</p>
+                <h3 style='background: #f4f4f4; padding: 10px; display: inline-block;'>{tempPassword}</h3>
+                <p>Please log in with this temporary password and change it immediately from your profile settings.</p>
+                <br/>
+                <p>Regards,<br/>Booking System Admin</p>
+            ";
+
+            try
+            {
+                await _emailService.SendEmailAsync(account.Email, subject, body);
+                return Ok(new { message = "If your email is registered, you will receive a new password shortly." });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "There was an error sending the password reset email. Please contact support.");
+            }
         }
 
         private bool AccountExists(Guid id)

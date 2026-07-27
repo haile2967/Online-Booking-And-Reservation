@@ -67,4 +67,12 @@ namespace online_booking_and_reservation.Models
         public DateTime CreatedAt { get; set; }
         public string Message { get; set; } = string.Empty;
     }
+
+    // Request model for forgot password
+    public class ForgotPasswordRequest
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+    }
 } 
